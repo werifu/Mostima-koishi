@@ -1,5 +1,11 @@
 # Mostima-koishi
-基于go-cqhttp与koishi框架的舟游bot
+主要由TypeScript编写，基于go-cqhttp与koishi框架的舟游bot
+## 启动
+
+```  
+npx koishi start -- -r ts-node/register
+```
+
 ## DONE
 
 [√] `！新饼 || !新饼`
