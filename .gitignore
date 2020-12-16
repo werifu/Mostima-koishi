@@ -1,0 +1,6 @@
+test.ts
+node_modules/
+pictures/*
+koishi.config.js
+private_config.ts
+./plugins/caker.js
