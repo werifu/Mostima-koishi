@@ -4,7 +4,7 @@ import {Context} from 'koishi-core';
 import {existsSync, writeFileSync} from 'fs';
 import {CQCode} from 'koishi-utils';
 import {groups, picture_path_prefix} from '../private_config';
-module.exports.name = 'caker';
+export const name = 'caker';
 
 interface Content {
     text: string,
@@ -14,7 +14,7 @@ interface Content {
 }
 
 const cake_time: number = 1;     //minutes
-const bili_uid = 161775300;        // b站号
+const bili_uid = 161775300;        // b站号,明日方舟：161775300
 
 
 export function apply(ctx: Context) {
@@ -25,7 +25,7 @@ export function apply(ctx: Context) {
             const promises = [];
             promises.push(getDynamics(bili_uid).then((content: Content)=>{
                 let paths = content.pictures;
-                console.log(content);
+                // console.log(content);
                 meta.$send(content.text)
                 for (const path of paths) {
                     meta.$send(CQCode.stringify('image', {file: picture_path_prefix+path}));        //cqhttp需要知道绝对路径
