@@ -5,3 +5,4 @@ pictures/*
 koishi.config.js
 private_config.ts
 plugins/caker.js
+test/

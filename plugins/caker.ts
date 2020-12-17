@@ -13,7 +13,7 @@ interface Content {
     time: number,
 }
 
-const cake_time: number = 1;     //minutes
+const cake_time: number = 5;     //minutes
 const bili_uid = 161775300;        // b站号,明日方舟：161775300
 
 
@@ -53,7 +53,7 @@ export function apply(ctx: Context) {
                 if (now - content.time < cake_time*60) {
                     let bot = ctx.bots[0];
                     let paths = content.pictures;
-                    console.log(content);
+                    // console.log(content);
                     bot.sendGroupMsg(groups[0], content.text)
                     for (const path of paths) {
                         bot.sendGroupMsg(groups[0],CQCode.stringify('image', {file: picture_path_prefix+path}));
@@ -152,7 +152,7 @@ function download_picture(url: string):Promise<any> {
         // console.log('download picture......');
         let name = get_picture_name(url);
         if (!existsSync(`./pictures/${name}`)){
-            console.log('download:'+url);
+            console.log('caker:download:'+url);
             writeFileSync(`./pictures/${name}`, data, 'binary');
             // console.log('download ok!');
         }

@@ -22,4 +22,4 @@ function getRandomIllustName():string {
     return list[getRandomInt(list.length)];
 }
 
-console.log(getRandomIllustName());
+// console.log(getRandomIllustName());
