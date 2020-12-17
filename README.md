@@ -1,7 +1,10 @@
 # Mostima-koishi
 主要由TypeScript编写，基于go-cqhttp与koishi框架的舟游bot
 ## 启动
+首先需要go-cqhttp服务器处于运行状态，能正确接收消息，并且将event上报给koishi
+将koishi.config.sample.js改名为koishi.config.js，同样地对private_config.sample.ts进行操作。并修改其中的配置。
 
+使用以下指令启动koishi（支持ts插件）
 ```  
 npx koishi start -- -r ts-node/register
 ```
