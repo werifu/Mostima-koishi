@@ -5,9 +5,12 @@ import {illustration_path_prefix} from '../private_config';
 
 export const name = 'illustrator';
 export function apply(ctx: Context) {
+    
     ctx.middleware(async (meta, next) => {
-        if (meta.message === '!色图' || meta.message === '！色图'){
-            return meta.$send(CQCode.stringify('image', {file: illustration_path_prefix+getRandomIllustName()}));
+        if (meta.message.includes('!色图') || meta.message.includes('！色图')){
+            let name = getRandomIllustName();
+            console.log(name);
+            return meta.$send(CQCode.stringify('image', {file: illustration_path_prefix+name}));
         } else {
             return next();
         }

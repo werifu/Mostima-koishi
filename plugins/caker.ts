@@ -3,7 +3,7 @@ import axios from 'axios';
 import {Context} from 'koishi-core';
 import {existsSync, writeFileSync} from 'fs';
 import {CQCode} from 'koishi-utils';
-import {groups, picture_path_prefix} from '../private_config';
+import {groups, picture_path_prefix, polling_period} from '../private_config';
 export const name = 'caker';
 
 interface Content {
@@ -13,7 +13,7 @@ interface Content {
     time: number,
 }
 
-const cake_time: number = 5;     //minutes
+const cake_time: number = polling_period;     //minutes
 const bili_uid = 161775300;        // b站号,明日方舟：161775300
 
 
@@ -21,9 +21,18 @@ export function apply(ctx: Context) {
     ctx.middleware(async (meta, next) => {
         // console.log(meta);
         let time_str:string;
-        if (meta.message === '!新饼' || meta.message === '！新饼') {
+        let search_exp = /^(！新饼|!新饼).*/;
+        if (meta.message.match(search_exp)) {
+            let opt_i = meta.message.match(search_exp)[0].substring(3);
+            if (opt_i === '') opt_i = '0';
+            let index = parseInt(opt_i, 10);
+            if (isNaN(index) || index < 0 || index > 9) {
+                return meta.$send('只支持数字0~9噢');
+            }
+            
+            // console.log(index);
             const promises = [];
-            promises.push(getDynamics(bili_uid).then((content: Content)=>{
+            promises.push(getDynamics(bili_uid, index).then((content: Content)=>{
                 let paths = content.pictures;
                 // console.log(content);
                 meta.$send(content.text)
@@ -44,25 +53,28 @@ export function apply(ctx: Context) {
 
     ctx.on('connect', async()=>{
         setInterval(async()=>{
-            let now = new Date().getTime();
-            now /= 1000;
+            
             const promises = [];
             let time_str:string;
-            promises.push(getDynamics(bili_uid).then((content: Content)=>{
+            promises.push(getDynamics(bili_uid, 0).then((content: Content)=>{
+                let now = new Date().getTime();
+                now /= 1000;
                 // console.log(now-content.time);
                 if (now - content.time < cake_time*60) {
                     let bot = ctx.bots[0];
                     let paths = content.pictures;
                     // console.log(content);
-                    bot.sendGroupMsg(groups[0], content.text)
-                    for (const path of paths) {
-                        bot.sendGroupMsg(groups[0],CQCode.stringify('image', {file: picture_path_prefix+path}));
-                    }
-                    if (content.vedio_url !== '') {
-                        bot.sendGroupMsg(groups[0],content.vedio_url);
-                    }
-                    time_str = format_time(content.time);
-                    bot.sendGroupMsg(groups[0],`发饼时间：${time_str}`);
+                    groups.forEach((group) => {
+                        bot.sendGroupMsg(group, content.text)
+                        for (const path of paths) {
+                            bot.sendGroupMsg(group,CQCode.stringify('image', {file: picture_path_prefix+path}));
+                        }
+                        if (content.vedio_url !== '') {
+                            bot.sendGroupMsg(group,content.vedio_url);
+                        }
+                        time_str = format_time(content.time);
+                        bot.sendGroupMsg(group,`发饼时间：${time_str}`);
+                    })
                 }
             }));
             await Promise.all(promises);
@@ -81,8 +93,8 @@ return {
     time,
 }
 */
-function getDynamics(uid: number):Promise<Content>{
-    return get_info(uid).then(async (content: Content):Promise<Content>=>{
+function getDynamics(uid: number, i: number):Promise<Content>{
+    return get_info(uid, i).then(async (content: Content):Promise<Content>=>{
         let picture_urls = content.pictures;
         let picture_paths:string[] = new Array();
         let all_axios = new Array();
@@ -117,8 +129,7 @@ return {
     time,
 }
 */
-function get_info(uid: number): Promise<Content> {
-    let i = 0;
+function get_info(uid: number, i: number): Promise<Content> {
     return axios.get(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?host_uid=${uid}&offset_dynamic_id=0`)
     .then((res)=>{
         let content = JSON.parse(res.data.data.cards[i].card);
