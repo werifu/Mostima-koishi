@@ -9,7 +9,7 @@ export function apply(ctx: Context) {
     ctx.middleware(async (meta, next) => {
         if (meta.message.includes('!色图') || meta.message.includes('！色图')){
             let name = getRandomIllustName();
-            console.log(name);
+            // console.log(name);
             return meta.$send(CQCode.stringify('image', {file: illustration_path_prefix+name}));
         } else {
             return next();
