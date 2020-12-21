@@ -21,7 +21,7 @@ function getRandomWord(): string {
     let random_word_num = getRandomInt(char.words.length);
     let char_name = char.char_name;
     console.log(random_word_num);
-    if (char.words[random_word_num].length === 0) {
+    if (char.words.length === 0) {
         return `（这个干员没话说）——${char_name}`;
     }
     let title = char.words[random_word_num].title;
