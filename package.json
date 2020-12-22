@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cheerio": "^1.0.0-rc.5",
     "koishi": "^2.4.3",
     "koishi-adapter-cqhttp": "^1.0.7",
     "koishi-core": "^2.4.2",

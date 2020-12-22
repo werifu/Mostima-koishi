@@ -6,3 +6,4 @@ koishi.config.js
 private_config.ts
 plugins/caker.js
 test/
+app.ts

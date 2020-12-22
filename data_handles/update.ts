@@ -1,11 +1,14 @@
 import fs = require('fs');
 import axios from 'axios';
+var cheerio = require('cheerio');
 class Character {
     char_name: string
     char_id: string
     words:  {
         title: string
         text: string
+        text_jp: string
+        record_url: string
     }[]
     constructor(char_name: string, char_id: string) {
         this.char_name = char_name;
@@ -13,29 +16,19 @@ class Character {
         this.words = new Array();
     }
 }
+
 function updateTable() {
     let character_table_url = `https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/character_table.json`;
-    let charword_table_url = `https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/master/zh_CN/gamedata/excel/charword_table.json`;
-    let all_axios = new Array();
-    all_axios.push(
-        axios.get(character_table_url).then((res) => {
+    return axios.get(character_table_url).then((res) => {
             let content = res.data;
             fs.writeFileSync('character_table.json', JSON.stringify(content));
         }).catch((err) => console.log(err))
-    );
-    all_axios.push(
-        axios.get(charword_table_url).then((res) => {
-        let content = res.data;
-        fs.writeFileSync('charword_table.json', JSON.stringify(content));
-    }).catch((err) => console.log(err))
-    );
-    return Promise.all(all_axios)
+
 }
 
 function updateWord() {
-    let charword_obj: any = fs.readFileSync('./charword_table.json');
     let char_obj: any = fs.readFileSync('./character_table.json');
-    charword_obj = JSON.parse(charword_obj);
+
     char_obj = JSON.parse(char_obj);
     
     let words = {};
@@ -44,14 +37,35 @@ function updateWord() {
         let char = char_obj[i];
         words[i] = new Character(char.name, i);
     }
-    
-    for (let i in charword_obj) {
-        let word = charword_obj[i];
-        let char_id: string = word.charId;
-        words[char_id].words.push({title: word.voiceTitle, text: word.voiceText})
+    let all_axios = new Array();
+    for (let i in words) {
+        let char_name = words[i].char_name;
+        let record_page_url = `http://prts.wiki/w/${encodeURI(char_name)}/%E8%AF%AD%E9%9F%B3%E8%AE%B0%E5%BD%95`;
+        all_axios.push(
+            axios.get(record_page_url).then((res) => {
+                let $ = cheerio.load(res.data);
+                let trs = $('tbody').first().children();
+                for (let tr of trs) {
+                    tr = tr.children;
+                    // title 1
+                    let title = tr[1].children[0].children[0].data
+                    // text 3
+                    let text = tr[3].children[1].children[0].data;
+                    let text_jp = tr[3].children[0].children[0].data
+                    // wav url 5
+                    let record_url = tr[5].children[1].children[5].attribs.href;
+                    words[i].words.push({title: title, text_jp: text_jp, text: text, record_url: record_url})
+                    // console.log(words[i]);
+                }    
+            }).catch(error => {
+                if (error.response.status === 404) {
+                    return;
+                }
+            })
+        )
     }
-    // console.log(Object.keys(words));
-    fs.writeFileSync('word.json', JSON.stringify(words), 'utf8');
+    Promise.all(all_axios).then(()=>fs.writeFileSync('word.json', JSON.stringify(words), 'utf8'))
+
 }
 
 
