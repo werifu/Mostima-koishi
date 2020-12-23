@@ -17,7 +17,7 @@ export function apply(ctx: Context) {
     ctx.middleware((meta, next) => {
         let msg:string = meta.message;
         //console.log(msg);
-        if (msg === '！名言 完整' || msg === '!名言 完整') {
+        if (msg.includes('！名言 完整') || msg.includes('!名言 完整')) {
             let word = getRandomWord();
             
             if (word.title === ``) {

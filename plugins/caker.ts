@@ -65,7 +65,9 @@ export function apply(ctx: Context) {
                     let paths = content.pictures;
                     // console.log(content);
                     groups.forEach((group) => {
-                        bot.sendGroupMsg(group, content.text)
+                        bot.sendGroupMsg(group,`发饼时间：${time_str}`).then(()=>{
+                            bot.sendGroupMsg(group, content.text)}
+                        )
                         for (const path of paths) {
                             bot.sendGroupMsg(group,CQCode.stringify('image', {file: picture_path_prefix+path}));
                         }
@@ -73,7 +75,7 @@ export function apply(ctx: Context) {
                             bot.sendGroupMsg(group,content.vedio_url);
                         }
                         time_str = format_time(content.time);
-                        bot.sendGroupMsg(group,`发饼时间：${time_str}`);
+                        
                     })
                 }
             }));
@@ -132,25 +134,30 @@ return {
 function get_info(uid: number, i: number): Promise<Content> {
     return axios.get(`https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?host_uid=${uid}&offset_dynamic_id=0`)
     .then((res)=>{
+        // console.log(res.data.data.cards[i].desc)
         let content = JSON.parse(res.data.data.cards[i].card);
-        if (content.dynamic !== undefined) {    // 说明发视频了
-            return handle_video(content);
-        } else if (content.item !== undefined) {
-            content = content.item;
-            if (content.category === 'daily') { // 说明是动态
+        switch (res.data.data.cards[i].desc.type) {
+            case 64: // 专栏
+                return handle_article(content);
+            case 2: // 动态
                 return handle_daily(content);
-            } else if (content.rp_id !== 0) {   // 说明是转发
-                return handle_rp(content);
-            }
+            case 8: // 视频
+                return handle_video(content);
+            default:    // 转发
+                return handle_rp(content);    
         }
         return {text:'', pictures:[] as string[], vedio_url:'', time:0};
     })
 }
 
 function get_picture_name(picture_url: string):string {
+    // console.log(picture_url);
     let name = picture_url.match(/album\/(.*)/s);
     if (name === null) {
         name = picture_url.match(/archive\/(.*)/s);
+    } 
+    if (name === null) {
+        name = picture_url.match(/article\/(.*)/s)
     }
     return name[1];
 }
@@ -163,7 +170,8 @@ function download_picture(url: string):Promise<any> {
         // console.log('download picture......');
         let name = get_picture_name(url);
         if (!existsSync(`./pictures/${name}`)){
-            console.log('caker:download:'+url);
+            console.log(
+                'caker:download:'+url);
             writeFileSync(`./pictures/${name}`, data, 'binary');
             // console.log('download ok!');
         }
@@ -218,6 +226,21 @@ function handle_rp(content:any):Content {
         text,
         pictures: [] as string[],
         vedio_url: '',
+        time
+    }
+}
+
+function handle_article(content:any):Content {
+    //content里重要的是title+summary(文字内容),publish_time（时间戳）, image_urls（封面图片链接[]）,ud 即cv号
+    let text:string = `专栏大饼！！\n【${content.title}】\n${content.summary}`;
+    let cv = content.id;
+    let cv_url = `https://www.bilibili.com/read/cv${cv}`;
+    let picture_urls:string[] = content.image_urls; 
+    let time:number = content.publish_time;
+    return {
+        text: text,
+        pictures:picture_urls,
+        vedio_url: cv_url,
         time
     }
 }
