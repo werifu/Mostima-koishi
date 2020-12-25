@@ -100,8 +100,10 @@ function searchMusic(tag: string): Promise<Music> {
         res = res.data.result;
         // console.log(res);
         if (res.songCount === 0) {
+            console.log("song count = 0:", res);
             return music;
         } else {
+            console.log(res);
             let song: any = res.songs[0];
             
             return getAlbumImgUrl(song.album.id).then((imgUrl) => {

@@ -59,7 +59,7 @@ export function apply(ctx: Context) {
             promises.push(getDynamics(bili_uid, 0).then((content: Content)=>{
                 let now = new Date().getTime();
                 now /= 1000;
-                // console.log(now-content.time);
+                console.log(`主动轮询：上一次饼发生距离现在${now-content.time}秒`);
                 if (now - content.time < cake_time*60) {
                     let bot = ctx.bots[0];
                     let paths = content.pictures;
@@ -136,6 +136,7 @@ function get_info(uid: number, i: number): Promise<Content> {
     .then((res)=>{
         // console.log(res.data.data.cards[i].desc)
         let content = JSON.parse(res.data.data.cards[i].card);
+        console.log(content);
         switch (res.data.data.cards[i].desc.type) {
             case 64: // 专栏
                 return handle_article(content);
@@ -196,11 +197,12 @@ function handle_video(content:any):Content {
     }
 }
 function handle_daily(content:any):Content {
-    //已经content = content.item;
     //content里是动态信息（后边几个都在item里），description是文字，upload_time是时间戳，category是daily，pictures是图片信息列表
-    
+    content = content.item;
     let description:string = content.description;
+    
     let pictures:any = content.pictures;
+    // console.log(pictures);
     let time:number = content.upload_time;
     // console.log(content);
     // 忽略转发之类的非正常动态
