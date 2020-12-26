@@ -53,13 +53,13 @@ export function apply(ctx: Context) {
 
     ctx.on('connect', async()=>{
         setInterval(async()=>{
-            
             const promises = [];
             let time_str:string;
             promises.push(getDynamics(bili_uid, 0).then((content: Content)=>{
                 let now = new Date().getTime();
                 now /= 1000;
-                console.log(`主动轮询：上一次饼发生距离现在${now-content.time}秒`);
+                
+                console.log(`主动轮询：现在是${now},上一次饼发生距离现在${now-content.time}秒`);
                 if (now - content.time < cake_time*60) {
                     let bot = ctx.bots[0];
                     let paths = content.pictures;
@@ -136,7 +136,7 @@ function get_info(uid: number, i: number): Promise<Content> {
     .then((res)=>{
         // console.log(res.data.data.cards[i].desc)
         let content = JSON.parse(res.data.data.cards[i].card);
-        console.log(content);
+        // console.log(content);
         switch (res.data.data.cards[i].desc.type) {
             case 64: // 专栏
                 return handle_article(content);
