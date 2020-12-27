@@ -49,15 +49,15 @@ export function apply(ctx: Context) {
             now /= 1000;
             const promises = [];
             let time_str:string;
-            promises.push(getLastAlbum(siren_id).then(getMusicByAlbumID).then((music:Music)=> {
+            await getLastAlbum(siren_id).then(getMusicByAlbumID).then((music:Music)=> {
                 if (music.id === -1) return;
                 groups.forEach((group: number) => {
                     let data: string = `<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><msg serviceID="2" templateID="1" action="web" brief="&#91;分享&#93; ${music.name}" sourceMsgId="0" url="http://music.163.com/m/song/${music.id}" flag="0" adverSign="0" multiMsgFlag="0" ><item layout="2"><audio cover="${music.img_src}" src="https://music.163.com/song/media/outer/url?id=${music.id}.mp3" /><title>${music.name}</title><summary>${music.artist}</summary></item><source name="网易云音乐" icon="https://pic.rmb.bdstatic.com/911423bee2bef937975b29b265d737b3.png" url="http://web.p.qq.com/qqmpmobile/aio/app.html?id=1101079856" action="app" a_actionData="com.netease.cloudmusic" i_actionData="tencent100495085://" appid="100495085" /></msg>`;
-                    ctx.bots[0].sendGroupMsg(group, `自由的鹰角又发歌了`);
-                    ctx.bots[0].sendGroupMsg(group, CQCode.stringify('xml',{data:data}))
+                    ctx.bots[0].sendGroupMsg(group, `自由的鹰角又发歌了`).then(()=>{
+                        ctx.bots[0].sendGroupMsg(group, CQCode.stringify('xml',{data:data}))
+                    });
                 })
-            }));
-            await Promise.all(promises);
+            });
             return;
         }, cake_time*1000*60);
     })
@@ -69,6 +69,7 @@ function getLastAlbum(artist_id): Promise<number> {
         if (res.data.hotAlbums.length === 0) return -1;
         let album: any = res.data.hotAlbums[0];
         let now = new Date().getTime();
+        console.log(`现在是${now}, 上一次发饼是${album.publishTime}, 距离上一次发饼是${(now-album.publishTime)/1000}秒`);
         if (now - album.publishTime < cake_time * 60 * 1000) {
             return album.id;
         }
