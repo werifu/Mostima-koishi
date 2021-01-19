@@ -59,7 +59,7 @@ export function apply(ctx: Context) {
                 let now = new Date().getTime();
                 now /= 1000;
                 
-                console.log(`主动轮询：现在是${now},上一次饼发生距离现在${now-content.time}秒`);
+                // console.log(`主动轮询：现在是${now},上一次饼发生距离现在${now-content.time}秒`);
                 if (now - content.time < cake_time*60) {
                     let bot = ctx.bots[0];
                     let paths = content.pictures;
