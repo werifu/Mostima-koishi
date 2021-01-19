@@ -76,7 +76,6 @@ export function apply(ctx: Context) {
                             bot.sendGroupMsg(group,content.vedio_url);
                         }
                         time_str = format_time(content.time);
-                        
                     })
                 }
             }));
