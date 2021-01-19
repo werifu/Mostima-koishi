@@ -63,6 +63,7 @@ export function apply(ctx: Context) {
                 if (now - content.time < cake_time*60) {
                     let bot = ctx.bots[0];
                     let paths = content.pictures;
+                    time_str = format_time(content.time);
                     // console.log(content);
                     groups.forEach((group) => {
                         bot.sendGroupMsg(group,`发饼时间：${time_str}`).then(()=>{
