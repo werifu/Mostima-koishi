@@ -70,5 +70,7 @@ function updateWord() {
 
 
 updateTable().then(() => {
-    updateWord();
+    updateWord()
+}).then(()=>{
+    console.log("finish");
 })
