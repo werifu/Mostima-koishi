@@ -43,6 +43,7 @@ function updateWord() {
         let record_page_url = `http://prts.wiki/w/${encodeURI(char_name)}/%E8%AF%AD%E9%9F%B3%E8%AE%B0%E5%BD%95`;
         all_axios.push(
             axios.get(record_page_url).then((res) => {
+                // console.log(char_name);
                 let $ = cheerio.load(res.data);
                 let trs = $('tbody').first().children();
                 for (let tr of trs) {
@@ -56,21 +57,29 @@ function updateWord() {
                     let record_url = tr[5].children[1].children[5].attribs.href;
                     words[i].words.push({title: title, text_jp: text_jp, text: text, record_url: record_url})
                     // console.log(words[i]);
-                }    
+                }
             }).catch(error => {
+                if (!error.response) {
+                    console.log(error);
+                    return;
+                }
                 if (error.response.status === 404) {
                     return;
                 }
             })
         )
     }
-    Promise.all(all_axios).then(()=>fs.writeFileSync('word.json', JSON.stringify(words), 'utf8'))
+    return Promise.all(all_axios).then(()=>fs.writeFileSync('word.json', JSON.stringify(words), 'utf8'))
 
 }
 
 
 updateTable().then(() => {
-    updateWord()
+    updateWord().then(()=>{
+        console.log('word update finish')
+    }).catch(console.log)
 }).then(()=>{
-    console.log("finish");
-})
+    console.log("all finish");
+}).catch(console.log);
+
+// updateWord();
