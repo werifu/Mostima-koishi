@@ -45,8 +45,13 @@ function updateWord() {
             axios.get(record_page_url).then((res) => {
                 // console.log(char_name);
                 let $ = cheerio.load(res.data);
-                let trs = $('tbody').first().children();
+                let trs = $('tbody').first()[0].children;
                 for (let tr of trs) {
+                    if (tr.type === 'text') continue;
+                    if (tr.type !== 'tag' || tr.name !== 'tr') {
+                        console.log(`${char_name} failed`);
+                        continue
+                    };
                     tr = tr.children;
                     // title 1
                     let title = tr[1].children[0].children[0].data
@@ -58,14 +63,16 @@ function updateWord() {
                     words[i].words.push({title: title, text_jp: text_jp, text: text, record_url: record_url})
                     // console.log(words[i]);
                 }
+                // console.log(`${char_name} ok`);
             }).catch(error => {
                 if (!error.response) {
-                    console.log(error);
+                    console.log(`response error: ${char_name} ---- ${error}`);
                     return;
                 }
                 if (error.response.status === 404) {
                     return;
                 }
+                console.log(`special error: ${char_name} ---- ${error}`);
             })
         )
     }
@@ -78,8 +85,4 @@ updateTable().then(() => {
     updateWord().then(()=>{
         console.log('word update finish')
     }).catch(console.log)
-}).then(()=>{
-    console.log("all finish");
-}).catch(console.log);
-
-// updateWord();
+})

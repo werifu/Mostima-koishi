@@ -11,13 +11,13 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.5",
     "koishi": "^2.4.3",
-    "koishi-adapter-cqhttp": "^1.0.7",
+    "koishi-adapter-cqhttp": "^1.0.8",
     "koishi-core": "^2.4.2",
     "koishi-plugin-common": "^3.0.3",
     "koishi-plugin-monitor": "^1.0.0-beta.16",
     "koishi-plugin-status": "^2.0.0",
     "koishi-plugin-teach": "^1.2.2",
-    "koishi-plugin-tools": "^1.0.3"
+    "koishi-plugin-tools": "^1.0.4"
   },
   "devDependencies": {
     "@types/node": "^14.14.14",
