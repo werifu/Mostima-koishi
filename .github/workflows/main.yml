@@ -12,17 +12,15 @@ jobs:
         uses: actions/checkout@v2
 
       - name: update the code && restart the bot
-        env:
-          KOISHI_PORT: 8080
-          GO_CQHTTP_PORT: 5700
+
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            netstat -tunlp|grep $KOISHI_PORT |awk '{print $7}'|awk -F '/' '{print $1}' | xargs kill -9
-            netstat -tunlp|grep $GO_CQHTTP_PORT |awk '{print $7}'|awk -F '/' '{print $1}' | xargs kill -9
+            netstat -tunlp|grep 8080 |awk '{print $7}'|awk -F '/' '{print $1}' | xargs kill -9
+            netstat -tunlp|grep 5700 |awk '{print $7}'|awk -F '/' '{print $1}' | xargs kill -9
             cd /home/mostima
             nohup ./go-cqhttp &
             cd Mostima-koishi
