@@ -8,3 +8,5 @@ plugins/caker.js
 test/
 app.ts
 backup/
+data_handles/character_table.json
+data_handles/word.json
