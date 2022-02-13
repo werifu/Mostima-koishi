@@ -1,7 +1,6 @@
 import {readFileSync} from 'fs';
 import {Context} from 'koishi-core';
-import {CQCode} from 'koishi-utils';
-import {record_path_prefix} from '../private_config';
+import {RecordPathPrefix} from '../../private_config';
 export const name: string = 'char_word';
 
 export class Word {
@@ -15,24 +14,24 @@ export class Word {
 
 export function apply(ctx: Context) {
     ctx.middleware((meta, next) => {
-        let msg:string = meta.message;
+        let msg: string = meta.content || '';
         //console.log(msg);
         if (msg.includes('！名言 完整') || msg.includes('!名言 完整')) {
             let word = getRandomWord();
             
             if (word.title === ``) {
-                return meta.$send(word.text+'——'+word.from);
+                return meta.send(word.text+'——'+word.from);
             }
 
-            return meta.$send(word.text).then(()=> {
-                meta.$send(`${word.text_jp}——${word.from}【${word.title}】`)
+            return meta.send(word.text).then(()=> {
+                meta.send(`${word.text_jp}——${word.from}【${word.title}】`)
             }).then(()=>{
-                meta.$send(CQCode.stringify('record', {file: word.record_url}));
+                meta.send(CQCode.stringify('record', {file: word.record_url}));
             })
         }else if (msg.includes('!名言') || msg.includes('！名言')) {
             let word = getRandomWord();
-            return meta.$send(word.text).then(()=>{
-                meta.$send(`from ${word.from}【${word.title}】`)
+            return meta.send(word.text).then(()=>{
+                meta.send(`from ${word.from}【${word.title}】`)
             });
             
         }

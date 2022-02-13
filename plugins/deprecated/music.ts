@@ -1,7 +1,7 @@
 import {Context} from 'koishi-core';
 import {CQCode} from 'koishi-utils';
 import axios from 'axios';
-import {owner, polling_period, groups} from '../private_config';
+import {owner, polling_period, groups} from '../../private_config';
 export const name: string = 'music';
 
 interface Music {

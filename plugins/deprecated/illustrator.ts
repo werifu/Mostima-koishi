@@ -1,7 +1,7 @@
 import {readdirSync} from 'fs';
 import {Context} from 'koishi-core';
 import {CQCode} from 'koishi-utils';
-import {illustration_path_prefix} from '../private_config';
+import {illustration_path_prefix} from '../../private_config';
 
 export const name = 'illustrator';
 export function apply(ctx: Context) {
