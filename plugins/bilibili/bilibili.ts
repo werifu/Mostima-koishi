@@ -14,15 +14,21 @@ const ArknightsUid = 161775300;
 const HaimaoUid = 53466;
 const WanziUid = 1579053316;
 const HyperGryghUid = 598504181;
-const Yanyu = 9318640;
 const ZCY902Uid = 290982;
+const AkEndFieldUid = 1265652806;
+const CubesUid = 2123591088;
+const ExAstrisUid = 1883857209;
+const NorizcUid = 4277009;
 let BiliUids = [
   ArknightsUid, // 明日方舟
   HaimaoUid, // 海猫络合物
   WanziUid, // 顽子
   HyperGryghUid, // 鹰角网络
-  Yanyu, // 盐鱼料理长
   ZCY902Uid, // 902先辈
+  AkEndFieldUid, // 明日方舟终末地
+  CubesUid, // 库柏思
+  ExAstrisUid, // 来自星尘
+  NorizcUid, // 紫菜
 ];
 export const name = 'bili';
 export function apply(ctx: Context) {
