@@ -30,7 +30,12 @@ export async function getDynamic(
     const { text, pictures, video } = handleCard(cards[offset].card, desc.type);
     let names: string[] = [];
     if (pictures) {
-      names = await downloadPictures(pictures);
+      const name = extractPictureName(pictures[0]);
+      if (!existsSync(`./pictures/${name}`)) {
+        names = await downloadPictures(pictures);
+      } else {
+        names = pictures.map((url) => extractPictureName(url))
+      }
     }
     return {
       username: desc.user_profile.info.uname,
