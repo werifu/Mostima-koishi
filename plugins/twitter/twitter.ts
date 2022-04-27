@@ -50,11 +50,11 @@ export function apply(ctx: Context, config: TwitterConfig) {
 
   ctx.command('!twitter').action(() => {
     const helps = [
-      '!twi-sub @xxxx [-ark]  订阅,-ark参数指定带方舟tag的推文',
-      '!twi-td @xxx 退订',
-      '!twi-list 查看订阅列表',
+      '!twi-sub @xxx [-ark]  subscribe,-ark参数指定带方舟tag的推文',
+      '!twi-td @xxx TD',
+      '!twi-list 查看subscribe列表',
     ];
-    return 'Usage:\n' + helps.join('\n');
+    return helps.join('\n');
   });
 
   ctx.command('!twi-list').action(async (_) => {
@@ -213,7 +213,7 @@ async function getSubscribeList(ctx: Context, accessToken: string) {
     })
     .then((res: AxiosResponse<{ data: UserInfo[] }>) => {
       const names = res.data.data.map(
-        (item) => `${item.name} @${item.username}`
+        (item) => `${item.name} \t@${item.username}`
       );
       let result = '已关注列表：\n';
       result += names.join('\n');
