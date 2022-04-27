@@ -1,12 +1,9 @@
 import { Context, sleep } from 'koishi';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import http2 from 'http2';
 import util from 'util';
-import {
-  Groups,
-  PicturePathPrefix,
-} from '../../private_config';
-import { existsSync, readFileSync, promises } from 'fs';
+import { Groups, PicturePathPrefix } from '../../private_config';
+import { existsSync, readFileSync, promises, accessSync } from 'fs';
 import { addRule, deleteRules, getRules, RuleToAdd } from './rules';
 interface TwitterConfig {
   accessToken: string;
@@ -33,7 +30,7 @@ export function apply(ctx: Context, config: TwitterConfig) {
 
   ctx
     .command('!twi-sub <username>')
-    .option('arkTag', '--ark', {value: true})
+    .option('arkTag', '--ark', { value: true })
     .action(async ({ options }, username) => {
       if (!username) return '格式错误';
       if (username[0] !== '@') return '用户名需@开头';
@@ -50,8 +47,18 @@ export function apply(ctx: Context, config: TwitterConfig) {
     if (username[0] !== '@') return '用户名需@开头';
     return await unsubscribe(username.substring(1), config.accessToken);
   });
+
   ctx.command('!twitter').action(() => {
-    return 'Usage: \n!twi-sub @xxxx [-ark]  订阅,-ark参数指定带方舟tag的推文\n!twi-td @xxx 退订';
+    const helps = [
+      '!twi-sub @xxxx [-ark]  订阅,-ark参数指定带方舟tag的推文',
+      '!twi-td @xxx 退订',
+      '!twi-list 查看订阅列表',
+    ];
+    return 'Usage:\n' + helps.join('\n');
+  });
+
+  ctx.command('!twi-list').action(async (_) => {
+    return await getSubscribeList(ctx, config.accessToken);
   });
 }
 
@@ -71,9 +78,11 @@ async function subscribe(
       value: ruleValue,
       tag: username,
     };
-    return await addRule(rule, accessToken).then(() => '订阅成功').catch(e => {
-      return `订阅失败: ${e.message}`;
-    })
+    return await addRule(rule, accessToken)
+      .then(() => '订阅成功')
+      .catch((e) => {
+        return `订阅失败: ${e.message}`;
+      });
   } catch (e) {
     console.log(util.inspect(e, false, null, true));
     return `订阅失败 caused by 异常`;
@@ -160,13 +169,13 @@ async function keepStream(ctx: Context, accessToken: string) {
 
 async function unsubscribe(username: string, accessToken: string) {
   try {
-    const rules = await getRules(accessToken).catch(e => {
+    const rules = await getRules(accessToken).catch((e) => {
       throw new Error(e.data);
     });
     const ids = rules
       .filter((item) => item.tag === username)
       .map((item) => item.id);
-    const res = await deleteRules(ids, accessToken).catch(e => {
+    const res = await deleteRules(ids, accessToken).catch((e) => {
       throw new Error(e.data);
     });
     if (res.summary.not_deleted === 0) return '退订成功';
@@ -176,4 +185,41 @@ async function unsubscribe(username: string, accessToken: string) {
     console.log(e);
   }
   return '退订失败';
+}
+
+interface UserInfo {
+  id: string;
+  username: string;
+  name: string;
+}
+async function getSubscribeList(ctx: Context, accessToken: string) {
+  const list = await getRules(accessToken).then((res) => {
+    return res
+      .map((item) => {
+        const reg = /from:([0-9a-zA-Z_]+)/;
+        const matched = item.value.match(reg);
+        if (!matched || matched.length < 2) return '';
+        return matched[1];
+      })
+      .filter((item) => item !== '');
+  });
+  const usernamesParam = encodeURI(list.join(','));
+  const url = 'https://api.twitter.com/2/users/by?usernames=' + usernamesParam;
+  return await axios
+    .get(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((res: AxiosResponse<{ data: UserInfo[] }>) => {
+      const names = res.data.data.map(
+        (item) => `${item.name} @${item.username}`
+      );
+      let result = '已关注列表：\n';
+      result += names.join('\n');
+      return result;
+    })
+    .catch((e) => {
+      return `查询发生错误 ${e.message}`;
+    });
 }
