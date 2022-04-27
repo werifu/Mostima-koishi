@@ -19,6 +19,7 @@ const AkEndFieldUid = 1265652806;
 const CubesUid = 2123591088;
 const ExAstrisUid = 1883857209;
 const NorizcUid = 4277009;
+const GravityWell = 1554642444;
 let BiliUids = [
   ArknightsUid, // 明日方舟
   HaimaoUid, // 海猫络合物
@@ -29,6 +30,7 @@ let BiliUids = [
   CubesUid, // 库柏思
   ExAstrisUid, // 来自星尘
   NorizcUid, // 紫菜
+  GravityWell, // 重力井
 ];
 export const name = 'bili';
 export function apply(ctx: Context) {
@@ -37,68 +39,57 @@ export function apply(ctx: Context) {
     // 匹配新饼命令
     const offset = matchNewsCmd(session.content);
     if (offset === -1) return next();
-    getDynamic(ArknightsUid, offset)
-      .then(async (data) => {
-        await session.sendQueued(
-          `来自账号【${data.username}】-${formatTime(data.time)}的新动态:`
-        );
-        await session.sendQueued(data.text);
-        if (data.pictures) {
-          for (const pic of data.pictures) {
-            await session.sendQueued(
-              `[CQ:image,file=${PicturePathPrefix + pic}]`
-            );
+    try {
+      getDynamic(ArknightsUid, offset)
+        .then(async (data) => {
+          await session.sendQueued(
+            `来自账号【${data.username}】-${formatTime(data.time)}的新动态:`
+          );
+          await session.sendQueued(data.text);
+          if (data.pictures) {
+            for (const pic of data.pictures) {
+              await session.sendQueued(
+                `[CQ:image,file=${PicturePathPrefix + pic}]`
+              );
+            }
           }
-        }
-        if (data.video) {
-          await session.sendQueued(`链接: ${data.video}`);
-        }
-      })
-      .catch((e) => {
-        console.log(e.code);
-        if (e.code === 'ECONNRESET') {
-          console.log('ECONNRESET: ' + e.config.url);
-        } else {
-          console.log(e);
-        }
-      });
+          if (data.video) {
+            await session.sendQueued(`链接: ${data.video}`);
+          }
+        })
+        .catch(e => {
+          throw new Error(e.message);
+        });
+    } catch (e) {
+      console.log(e);
+    }
   });
 
   ctx.on('connect', () => {
     setInterval(async () => {
       // 每个订阅账号都轮询
       for (const uid of BiliUids) {
-        await getDynamic(uid, 0)
-          .then(async (data) => {
-            // 跟js对齐（b站最小单位是秒，js是毫秒
-            const now = new Date().getTime();
-            if (now - data.time.getTime() <= PollingPeriod) {
-              //   console.log(now, data.time.getTime());
-              // 说明还没发过
-              broadcast(ctx, Groups, data);
-            }
-          })
-          .catch((e) => {
-            if (e.code === 'ECONNRESET') {
-              console.log('ECONNRESET: ' + e.config.url);
-            } else {
-              console.log(`uid: ${uid}`, e);
-            }
-          });
+        try {
+          await getDynamic(uid, 0)
+            .then(async (data) => {
+              // 跟js对齐（b站最小单位是秒，js是毫秒
+              const now = new Date().getTime();
+              if (now - data.time.getTime() <= PollingPeriod) {
+                //   console.log(now, data.time.getTime());
+                // 说明还没发过
+                broadcast(ctx, Groups, data);
+              }
+            })
+            .catch(e => {
+              throw new Error(e.message);
+            });
+        } catch (e) {
+          console.log(e);
+          continue;
+        }
       }
     }, PollingPeriod);
   });
-
-  ctx
-    .user(owner.toString())
-    .command('subscribe [uid:number]')
-    .action((_, uid) => {
-      if (BiliUids.indexOf(uid) !== -1) {
-        return '已经订阅该用户';
-      }
-      BiliUids.push(uid);
-      return `订阅成功`;
-    });
 }
 
 async function broadcast(ctx: Context, groups: number[], data: Dynamic) {

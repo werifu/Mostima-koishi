@@ -16,3 +16,5 @@ export const RecordPathPrefix =
 export const PollingPeriod = 60000;
 // saucenao的API key，到saucenao上申请
 export const SaucenaoApiKey = '13241532';
+// twitter access token
+export const TwitterAccessToken = 'xx';

@@ -13,7 +13,8 @@
     "cheerio": "^1.0.0-rc.5",
     "koishi-adapter-onebot": "^3.1.0",
     "koishi-plugin-common": "^4.3.5",
-    "koishi-plugin-image-search": "3"
+    "koishi-plugin-image-search": "3",
+    "twitter-api-sdk": "^1.0.3"
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",

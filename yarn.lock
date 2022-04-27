@@ -3002,7 +3002,7 @@ nhentai-api@^3.0.2:
   resolved "https://registry.yarnpkg.com/nhentai-api/-/nhentai-api-3.4.3.tgz#65040e42b61ac049986af1b69752b5b8c1a2c60f"
   integrity sha512-IPzoB9/GRVF/wofyao6SfpFIak2GyE8+4F7ipDJXK/vmxV3QPa+7E7+cst2zsXis5j9Yxk3Cf/zodktaM9UU9w==
 
-node-fetch@^2.6.7:
+node-fetch@^2.6.1, node-fetch@^2.6.7:
   version "2.6.7"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.7.tgz#24de9fba827e3b4ae44dc8b20256a379160052ad"
   integrity sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==
@@ -3645,6 +3645,13 @@ tsutils@^3.21.0:
   integrity sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==
   dependencies:
     tslib "^1.8.1"
+
+twitter-api-sdk@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/twitter-api-sdk/-/twitter-api-sdk-1.0.3.tgz#f298cbcb15e891027e41cab1fc07710198c2ae51"
+  integrity sha512-82tGMkg8ova+EpQ8sc5iEBlu5YZxKWtGz3I2pP99+NzTr28K6BQvUj3kdg0M+lU6+HiPpoX6v5N/4ikGQorQlg==
+  dependencies:
+    node-fetch "^2.6.1"
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
