@@ -19,8 +19,6 @@ interface Subscribed {
     value: string;
   };
 }
-let subList: Array<Subscribed> = [];
-
 interface Media {
   media_key: string;
   type: string;
@@ -29,8 +27,6 @@ interface Media {
 // 本插件用于搬运推特方舟图
 export const name = 'twitter';
 export function apply(ctx: Context, config: TwitterConfig) {
-  const txt = readFileSync('plugins/twitter/sublist.json', 'utf8');
-  subList = JSON.parse(txt).sub_list;
   ctx.on('connect', () => {
     keepStream(ctx, config.accessToken);
   });
