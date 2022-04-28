@@ -96,20 +96,25 @@ async function broadcast(ctx: Context, groups: number[], data: Tweet) {
   const bot = ctx.bots[0];
   // 每个群都发，同步发避免封号
   for (const group of groups) {
-    await bot.sendMessage(group.toString(), `订阅色图更新: ${data.url}`);
-    if (data.pictures) {
-      for (const pic of data.pictures) {
-        await bot.sendMessage(
-          group.toString(),
-          `[CQ:image,file=${PicturePathPrefix + pic}]`
-        );
+    try {
+      await bot.sendMessage(group.toString(), `订阅色图更新: ${data.url}`);
+      if (data.pictures) {
+        for (const pic of data.pictures) {
+          await bot.sendMessage(
+            group.toString(),
+            `[CQ:image,file=${PicturePathPrefix + pic}]`
+          );
+        }
       }
+    } catch (e) {
+      console.log('send fail: ', e);
+      continue;
     }
   }
 }
 
-function extractPictureName(url: string): string | null {
-  const reg = /([0-9a-zA-Z]+\.(png|jpg|jiff))$/;
+export function extractPictureName(url: string): string | null {
+  const reg = /([0-9a-zA-Z-]+\.(png|jpg|jiff))$/;
   const found = url.match(reg);
   if (!found?.length) {
     return null;
@@ -134,6 +139,7 @@ async function keepStream(ctx: Context, accessToken: string) {
         console.log('no twitter url: ', chunk);
         return;
       }
+      console.log('data come in: ', chunk);
       const twiUrl = twiUrlRes[0];
       const picUrls: Array<string> = info.includes.media.map(
         (item: Media) => item.url
