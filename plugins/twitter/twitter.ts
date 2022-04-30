@@ -27,7 +27,6 @@ export function apply(ctx: Context, config: TwitterConfig) {
   ctx.on('connect', () => {
     keepStream(ctx, config.accessToken);
   });
-
   ctx
     .command('!twi-sub <username>')
     .option('arkTag', '--ark', { value: true })
@@ -171,6 +170,10 @@ async function keepStream(ctx: Context, accessToken: string) {
       // console.log(e);
     }
   });
+  req.on('close', () => {
+    console.log('stream has been closed, will retry');
+    keepStream(ctx, accessToken);
+  })
 }
 
 async function unsubscribe(username: string, accessToken: string) {
