@@ -32,6 +32,7 @@ export function apply(ctx: Context, config: TwitterConfig) {
     .option('arkTag', '--ark', { value: true })
     .action(async ({ options }, username) => {
       if (!username) return '格式错误';
+      if (username.endsWith('--ark')) return '--ark前请加空格';
       if (username[0] !== '@') return '用户名需@开头';
       console.log(options);
       return await subscribe(
