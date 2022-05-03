@@ -83,7 +83,8 @@ export function apply(ctx: Context) {
             .catch(e => {
               throw new Error(e.message);
             });
-        } catch (e) {
+        } catch (e: any) {
+          if (e.message === 'NO_DYNAMIC') continue; // 不处理无动态错误
           console.log(e);
           continue;
         }

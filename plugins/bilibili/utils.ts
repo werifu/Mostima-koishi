@@ -26,7 +26,7 @@ export async function getDynamic(
   const url = `https://api.vc.bilibili.com/dynamic_svr/v1/dynamic_svr/space_history?host_uid=${uid}`;
   return axios.get(url).then(async (res) => {
     const cards = res.data.data.cards;
-    if (!cards) return Promise.reject(new Error('no dynamic'));
+    if (!cards) return Promise.reject(new Error('NO_DYNAMIC'));
     const desc = cards[offset].desc;
     const { text, pictures, video } = handleCard(cards[offset].card, desc.type);
     let names: string[] = [];
