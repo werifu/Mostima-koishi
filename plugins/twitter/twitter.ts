@@ -197,6 +197,10 @@ async function keepStream(ctx: Context, accessToken: string) {
     console.log('stream has been closed, will retry');
     keepStream(ctx, accessToken);
   });
+  req.on('error', (e) => {
+    console.log('stream error', e);
+    keepStream(ctx, accessToken);
+  })
 }
 
 async function unsubscribe(username: string, accessToken: string) {
