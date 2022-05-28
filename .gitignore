@@ -1,7 +1,9 @@
 test.ts
 node_modules/
 illustrations/*
+illusts/
 pictures/*
+records/
 koishi.config.js
 private_config.ts
 plugins/caker.js
