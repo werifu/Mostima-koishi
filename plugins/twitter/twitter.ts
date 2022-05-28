@@ -133,7 +133,7 @@ async function broadcast(ctx: Context, groups: number[], data: Tweet) {
         for (const pic of data.pictures) {
           await bot.sendMessage(
             group.toString(),
-            `[CQ:image,file=${PicturePathPrefix + pic}]`
+            `[CQ:image,file=${IllustrationPathPrefix + pic}]`
           );
         }
       }
