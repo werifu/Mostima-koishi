@@ -1,4 +1,6 @@
-import { extractPictureName } from "./twitter";
+import { randomInt } from 'crypto';
+import { readdirSync } from 'fs';
+import { extractPictureName } from './twitter';
 test('extract picutre name', () => {
   const urls = [
     'https://pbs.twimg.com/media/FRGEvrRaMAAZG-a.jpg',
@@ -6,8 +8,15 @@ test('extract picutre name', () => {
   ];
   expect(extractPictureName(urls[0])).toBe('FRGEvrRaMAAZG-a.jpg');
   expect(extractPictureName(urls[1])).toBe('FRCAin8agAIxSmG.png');
-})
+});
 
-// test('add from', () => {
-//   expect(addFrom(''))
+// test('', () => {
+//   console.log(randomInt(5))
 // })
+// test('', () => {
+//   const picNames = readdirSync('./pictures').filter((file) => {
+//     const res = file.match(/\.(gif|jpg|png|jpeg)$/);
+//     return res !== null;
+//   });
+//   console.log(picNames);
+// });

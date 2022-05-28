@@ -2,9 +2,14 @@ import { Context, sleep } from 'koishi';
 import axios, { AxiosResponse } from 'axios';
 import http2 from 'http2';
 import util from 'util';
-import { Groups, PicturePathPrefix } from '../../private_config';
-import { existsSync, readFileSync, promises, accessSync } from 'fs';
+import {
+  Groups,
+  PicturePathPrefix,
+  IllustrationPathPrefix,
+} from '../../private_config';
+import { existsSync, promises, readdirSync } from 'fs';
 import { addRule, deleteRules, getRules, RuleCodec, RuleToAdd } from './rules';
+import { randomInt } from 'crypto';
 interface TwitterConfig {
   accessToken: string;
 }
@@ -59,6 +64,10 @@ export function apply(ctx: Context, config: TwitterConfig) {
 
   ctx.command('!twi-list').action(async (_) => {
     return await getSubscribeList(config.accessToken);
+  });
+
+  ctx.command('来点色图').action(() => {
+    return randomIllust();
   });
 }
 
@@ -170,7 +179,7 @@ async function keepStream(ctx: Context, accessToken: string) {
       picUrls.forEach((url) => {
         const picName = extractPictureName(url);
         if (!picName) return;
-        if (existsSync(`./pictures/${picName}`)) return;
+        if (existsSync(`./illusts/${picName}`)) return;
         // not exist, can download
         tasks.push(
           axios
@@ -178,7 +187,7 @@ async function keepStream(ctx: Context, accessToken: string) {
               responseType: 'arraybuffer',
             })
             .then(({ data }) => {
-              promises.writeFile(`./pictures/${picName}`, data, 'binary');
+              promises.writeFile(`./illusts/${picName}`, data, 'binary');
             })
         );
       });
@@ -200,7 +209,7 @@ async function keepStream(ctx: Context, accessToken: string) {
   req.on('error', (e) => {
     console.log('stream error', e);
     keepStream(ctx, accessToken);
-  })
+  });
 }
 
 async function unsubscribe(username: string, accessToken: string) {
@@ -276,4 +285,13 @@ async function getSubscribeList(accessToken: string) {
       console.log(e);
       return `查询发生错误 ${e.message}`;
     });
+}
+
+function randomIllust(): string {
+  const picNames = readdirSync('./pictures').filter((file) => {
+    const res = file.match(/\.(gif|jpg|png|jpeg)$/);
+    return res !== null;
+  });
+  const pic = picNames[randomInt(picNames.length)];
+  return `[CQ:image,file=${IllustrationPathPrefix + pic}]`;
 }
