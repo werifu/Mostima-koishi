@@ -66,13 +66,8 @@ export function apply(ctx: Context, config: TwitterConfig) {
     return await getSubscribeList(config.accessToken);
   });
 
-  ctx.middleware(async (session, next) => {
-    if (session.content === undefined) return next();
-    if (session.content === '来点色图') {
-      await session.sendQueued(randomIllust());
-    } else {
-      return next();
-    }
+  ctx.command('来点色图').action(() => {
+    return randomIllust();
   });
 }
 
@@ -293,7 +288,7 @@ async function getSubscribeList(accessToken: string) {
 }
 
 function randomIllust(): string {
-  const picNames = readdirSync('./pictures').filter((file) => {
+  const picNames = readdirSync('./illusts/').filter((file) => {
     const res = file.match(/\.(gif|jpg|png|jpeg)$/);
     return res !== null;
   });
