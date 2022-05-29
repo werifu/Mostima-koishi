@@ -104,7 +104,7 @@ export async function cqRecord(
     )}_${encodeURI(recordScene)}.wav`;
     console.log(recordUrl);
     return await axios
-      .get(recordUrl, { responseType: 'stream', timeout: 4000 })
+      .get(recordUrl, { responseType: 'stream', timeout: 10000 })
       .then((res) => {
         return new Promise((resolve) => {
           const file = fs.createWriteStream('./records/' + fileName);
