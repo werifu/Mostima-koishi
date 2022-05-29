@@ -10,25 +10,25 @@ npm i
 
 首先需要go-cqhttp服务器处于运行状态，能正确接收消息，并且将event上报给koishi
 
-将koishi.config.sample.js改名为koishi.config.js，同样地对private_config.sample.ts进行操作。并修改其中的配置，具体可参见[koishi文档](koishi.js.org)。
+改名：private_config.sample.ts => private_config.ts
 
-创建pictures和illustrations文件夹，一个存放新饼的图片，一个存放色图（记得把绝对路径前缀写private_config里）
+修改其中的配置
+
+创建pictures、illusts、records文件夹
+
+需要自己的推特开发者token
+
 
 ```  
-# 启动koishi（支持ts插件）
-npx koishi start -- -r ts-node/register
-# 也可以用ts-node启动
-# 配置和koishi.config.js是一样的，记得require('koishi-adapter-cqhttp')
+# 启动koishi
 ts-node app.ts
 ```
 
 ## DONE
 
-* 发饼
+* 发饼 bilibili
 
-    对应caker.ts
-
-    抓取方舟b站动态，有主动轮询b站动态，发新动态时会推送至群里。
+    抓取方舟b站动态，主动轮询b站动态，发新动态时会推送至群里。
 
     ```
     !新饼 [0~9]
@@ -36,43 +36,38 @@ ts-node app.ts
     // 支持全角！和半角!
     ```
 
-
-* 音乐(现已下架)
-
-    对应music.ts
-
-    基于网易云的api，有主动轮询塞壬唱片的专辑信息，发新专时会推送至群里。
-
-    ```
-    !音角
-    // 随机抽网易云塞壬唱片的音乐，用xml推到qq
-    !音乐 [search_tag]
-    // 返回网易云搜索search_tag的第一个结果
-    // 支持全角！和半角!
-    ```
-    
-* 名言（现已下架）
-
-    对应char_word.ts
+* 语音 voice
 
     随机干员语录，数据来自https://github.com/Kengxxiao/ArknightsGameData和[PRTS wiki](prts.wiki)
 
     ```
-    !名言 [opt]
-    // 支持全角！和半角!
-    // opt没有任何作用，遇事不决可以让小莫占卜一下哦
-    !名言 完整
-    // 支持全角！和半角!
-    // 会输出完整的角色台词，包括中文文本、日文文本以及语音（可以学日语（不x
-    // 材料来自，感谢，数据是爬下来自己解析的
+    语音 [角色名] [中文|日文|方言]
     ```
+    参数可选，默认随机
 
-    如[W的语音记录](http://prts.wiki/w/W/%E8%AF%AD%E9%9F%B3%E8%AE%B0%E5%BD%95)：
+    语音文件如：[夕的语音](https://static.prts.wiki/voice_custom/char_2015_dusk_cn_topolect/%E5%A4%95_%E4%BB%BB%E5%91%BD%E5%8A%A9%E7%90%86.wav)
 
-* 复读
+* 搜图
+    ```
+    搜图
+    ```
+    使用koishi现成轮子
 
-    好像没什么好说的（），对应repeat.ts
+* 推特关注
+  ```
+  !twi-list // 查看关注列表
+  !twi-sub @twitter_id [--ark]  // 带--ark参数只转发带方舟tag的图，@后为推特的username(而不是昵称)
+  !twi-td @twitter_id   // 退订
+  !twitter // 打开help
+  ```
+  使用推特开发者平台的HTTP2 rule stream实现
+
+  自己维护了规则
+* 来点色图（非R18)
+  ```
+  来点色图
+  ```
+  从推特历史图库里找
 
 ## TODO
-
-[ ] 恢复网易云推送
+[ ] 容器化  // 现在是用systemd跑的（懒得更了
