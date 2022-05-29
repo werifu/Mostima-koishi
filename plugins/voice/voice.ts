@@ -59,27 +59,31 @@ export function apply(ctx: Context) {
     }, 1000 * 60 * 60 * 24); // one day
   });
 
-  ctx.command('语音 <name> <lang>').action(async (_, name, lang) => {
-    let char: Character;
-    let chars;
-    try {
-      chars = getChars(charsFile);
-    } catch (e) {
-      console.log(e);
-      return '角色获取失败';
-    }
-    if (name && !getChar(chars, name)) {
-      return '无此干员';
-    }
-    char = getChar(chars, name) ?? randomChar(chars);
-    const type = randomRecordType();
-    if (lang && lang !== '中文' && lang !== '日文' && lang !== '方言')
-      return '只支持【中文】、【日文】、【方言】';
-    lang = lang ?? '日文';
-    // 方言的多了个后缀
-    const id = lang === '方言' ? char.id + '_cn_topolect' : char.id;
-    return await cqRecord(id, char.name, voiceLangs[lang as Lang], type);
-  });
+  ctx
+    .command('语音 <name> <lang> <scene>')
+    .action(async (_, name, lang, scene) => {
+      let char: Character;
+      if (scene && !validScene(scene))
+        return '无此语音场景, 支持的有：\n' + recordTypes.join('/');
+      let chars;
+      try {
+        chars = getChars(charsFile);
+      } catch (e) {
+        console.log(e);
+        return '角色获取失败';
+      }
+      if (name && !getChar(chars, name)) {
+        return '无此干员';
+      }
+      char = getChar(chars, name) ?? randomChar(chars);
+      const type = randomRecordType();
+      if (lang && lang !== '中文' && lang !== '日文' && lang !== '方言')
+        return '只支持【中文】、【日文】、【方言】';
+      lang = lang ?? '日文';
+      // 方言的多了个后缀
+      const id = lang === '方言' ? char.id + '_cn_topolect' : char.id;
+      return await cqRecord(id, char.name, voiceLangs[lang as Lang], type);
+    });
 }
 
 // filename: ${voiceLang}_${name}_${recordType}.wav
@@ -100,7 +104,7 @@ export async function cqRecord(
     )}_${encodeURI(recordType)}.wav`;
     console.log(recordUrl);
     return await axios
-      .get(recordUrl, { responseType: 'stream' })
+      .get(recordUrl, { responseType: 'stream', timeout: 4000 })
       .then((res) => {
         return new Promise((resolve) => {
           const file = fs.createWriteStream('./records/' + fileName);
@@ -116,7 +120,7 @@ export async function cqRecord(
       .catch((err) => {
         console.log(err);
         if (err.response && err.response.status === 404) return `不支持此语言`;
-        return `语音发送失败`;
+        return `语音下载/发送失败`;
       });
   }
 }
@@ -132,6 +136,12 @@ function randomChar(chars: Character[]): Character {
   return chars[randomInt(chars.length)];
 }
 
+function validScene(scene: string): boolean {
+  for (let i = 0; i < recordTypes.length; i++) {
+    if (recordTypes[i] === scene) return true;
+  }
+  return false;
+}
 function getChar(chars: Character[], name: string): Character | null {
   for (let i = 0; i < chars.length; i++) {
     if (name === chars[i].name) return chars[i];
