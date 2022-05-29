@@ -6,7 +6,7 @@ import { RecordPathPrefix } from '../../private_config';
 import { fileURLToPath } from 'url';
 import { resolve } from 'path';
 
-const recordTypes = [
+const recordScenes = [
   '任命助理',
   '交谈1',
   '交谈2',
@@ -64,7 +64,7 @@ export function apply(ctx: Context) {
     .action(async (_, name, lang, scene) => {
       let char: Character;
       if (scene && !validScene(scene))
-        return '无此语音场景, 支持的有：\n' + recordTypes.join('/');
+        return '无此语音场景, 支持的有：\n' + recordScenes.join('/');
       let chars;
       try {
         chars = getChars(charsFile);
@@ -76,32 +76,32 @@ export function apply(ctx: Context) {
         return '无此干员';
       }
       char = getChar(chars, name) ?? randomChar(chars);
-      const type = randomRecordType();
+      scene = scene ?? randomRecordScene();
       if (lang && lang !== '中文' && lang !== '日文' && lang !== '方言')
         return '只支持【中文】、【日文】、【方言】';
       lang = lang ?? '日文';
       // 方言的多了个后缀
       const id = lang === '方言' ? char.id + '_cn_topolect' : char.id;
-      return await cqRecord(id, char.name, voiceLangs[lang as Lang], type);
+      return await cqRecord(id, char.name, voiceLangs[lang as Lang], scene);
     });
 }
 
-// filename: ${voiceLang}_${name}_${recordType}.wav
+// filename: ${voiceLang}_${name}_${recordScene}.wav
 export async function cqRecord(
   id: string,
   name: string,
   voiceLang: string,
-  recordType: string
+  recordScene: string
 ) {
   const md5 = createHash('md5');
   const fileName =
-    md5.update(`${voiceLang}_${name}_${recordType}`).digest('hex') + '.wav';
+    md5.update(`${voiceLang}_${name}_${recordScene}`).digest('hex') + '.wav';
   if (fs.existsSync('./records/' + fileName)) {
     return `[CQ:record,file=${RecordPathPrefix + fileName}]`;
   } else {
     const recordUrl = `https://static.prts.wiki/${voiceLang}/${id}/${encodeURI(
       name
-    )}_${encodeURI(recordType)}.wav`;
+    )}_${encodeURI(recordScene)}.wav`;
     console.log(recordUrl);
     return await axios
       .get(recordUrl, { responseType: 'stream', timeout: 4000 })
@@ -125,8 +125,8 @@ export async function cqRecord(
   }
 }
 
-function randomRecordType(): string {
-  return recordTypes[randomInt(recordTypes.length)];
+function randomRecordScene(): string {
+  return recordScenes[randomInt(recordScenes.length)];
 }
 function getChars(path: string): Character[] {
   return JSON.parse(fs.readFileSync(path).toString());
@@ -137,8 +137,8 @@ function randomChar(chars: Character[]): Character {
 }
 
 function validScene(scene: string): boolean {
-  for (let i = 0; i < recordTypes.length; i++) {
-    if (recordTypes[i] === scene) return true;
+  for (let i = 0; i < recordScenes.length; i++) {
+    if (recordScenes[i] === scene) return true;
   }
   return false;
 }
