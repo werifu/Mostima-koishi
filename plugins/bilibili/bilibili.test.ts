@@ -101,13 +101,17 @@ test('测试extractPictureName', async () => {
     'https://i0.hdslb.com/bfs/archive/1a94bc6016d0282e9b3c5aa4589fb323bcba7d99.jpg';
   const albumUrl =
     'https://i0.hdslb.com/bfs/album/7371752c1993f38d82ae20633d068fd274816a60.jpg';
-
+  const newDynUrl =
+    'https://i0.hdslb.com/bfs/new_dyn/abc123.jpg';
+  
   expect(extractPictureName(achiveUrl)).toBe(
     '1a94bc6016d0282e9b3c5aa4589fb323bcba7d99.jpg'
   );
   expect(extractPictureName(albumUrl)).toBe(
     '7371752c1993f38d82ae20633d068fd274816a60.jpg'
   );
+  expect(extractPictureName(newDynUrl)).toBe('abc123.jpg');
+  expect(extractPictureName('https://114514.com/as.jpg')).toBe('');
 });
 
 test('测试下载图片', async () => {

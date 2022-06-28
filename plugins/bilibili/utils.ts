@@ -169,18 +169,12 @@ export async function downloadPicture(url: string): Promise<string> {
 }
 
 export function extractPictureName(url: string): string {
-  let name = url.match(/album\/(.*)/s);
-  if (name === null) {
-    name = url.match(/archive\/(.*)/s);
-  }
-  if (name === null) {
-    name = url.match(/article\/(.*)/s);
-  }
+  let name = url.match(/(album|archive|article|new_dyn)\/(.*)/s);
   if (name === null) {
     console.log('cannot analyse the picture url: ' + url);
     return '';
   }
-  return name[1];
+  return name[2];
 }
 
 /**
