@@ -14,7 +14,7 @@ export function apply(ctx: Context) {
     // 有人发了与上一条相同的句子而且bot没复读过
     if (session.content === lastMsgMap.get(groupId) && send_flag === false) {
       send_flag = true;
-      const randDelay = randomInt(0, 3600) * 1000;
+      const randDelay = randomInt(0, 300) * 1000;
       // 随机延迟
       setTimeout(() => {
         session.content && session.send(session.content);
