@@ -10,14 +10,29 @@ const openai = new OpenAIApi(configuration);
 
 export function apply(ctx: Context) {
   ctx
-    .command('小莫，<prompt>', { minInterval: Time.second * 5 })
+    .command('小莫， <prompt>', { minInterval: Time.second * 5 })
+    .alias('Mostima,')
+    .alias('mostima,')
     .action(async (_, prompt) => {
       return await chat(prompt);
     });
 
+  ctx.group().middleware(async (session, next) => {
+    if (!session.content || !session.channelId) return next();
+    // 十个字以上才有可能被 chatgpt
+    if (session.content.length > 10) {
+      const random = Math.random();
+      if (random <= 0.05) {
+        const res = await chat(session.content);
+        await session.send(res);
+        return;
+      }
+    }
+    return next();
+  });
 }
 
-export async function chat(prompt: string) {
+async function chat(prompt: string) {
   const question = generatePrompt(prompt);
   try {
     const completion = await openai.createChatCompletion({
