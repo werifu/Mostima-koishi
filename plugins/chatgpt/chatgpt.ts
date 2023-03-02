@@ -13,6 +13,8 @@ export function apply(ctx: Context) {
     .command('小莫 [...words]', { minInterval: Time.second * 5 })
     .alias('Mostima')
     .alias('mostima')
+    .alias('mostima,')
+    .alias('Mostima,')
     .action(async (_, ...words) => {
       const prompt = words.join(' ');
       console.log('prompt:', prompt);
