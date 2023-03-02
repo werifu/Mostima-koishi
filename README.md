@@ -69,5 +69,11 @@ ts-node app.ts
   ```
   从推特历史图库里找
 
+* chatGPT
+  ```
+  小莫，xxxxx
+  ```
+  xxxxx 即为你想问的
+
 ## TODO
 [ ] 容器化  // 现在是用systemd跑的（懒得更了
