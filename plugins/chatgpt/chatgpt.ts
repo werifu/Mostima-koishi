@@ -10,10 +10,11 @@ const openai = new OpenAIApi(configuration);
 
 export function apply(ctx: Context) {
   ctx
-    .command('小莫， <prompt>', { minInterval: Time.second * 5 })
-    .alias('Mostima,')
-    .alias('mostima,')
+    .command('小莫 <prompt>', { minInterval: Time.second * 5 })
+    .alias('Mostima')
+    .alias('mostima')
     .action(async (_, prompt) => {
+      console.log('prompt:', prompt);
       return await chat(prompt);
     });
 
