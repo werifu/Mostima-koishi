@@ -20,7 +20,7 @@ const CubesUid = 2123591088;
 const ExAstrisUid = 1883857209;
 const NorizcUid = 4277009;
 const GravityWell = 1554642444;
-let BiliUids = [
+const BiliUids = [
   ArknightsUid, // 明日方舟
   HaimaoUid, // 海猫络合物
   WanziUid, // 顽子

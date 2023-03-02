@@ -175,7 +175,7 @@ async function keepStream(ctx: Context, accessToken: string) {
       const picUrls: Array<string> = info.includes.media.map(
         (item: Media) => item.url
       );
-      let tasks: Promise<void>[] = [];
+      const tasks: Promise<void>[] = [];
       picUrls.forEach((url) => {
         const picName = extractPictureName(url);
         if (!picName) return;

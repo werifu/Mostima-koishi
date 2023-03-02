@@ -6,6 +6,8 @@ import * as search from 'koishi-plugin-image-search';
 import * as repeat from './plugins/repeat';
 import * as twitter from './plugins/twitter/twitter';
 import * as voice from './plugins/voice/voice';
+import * as chatgpt from './plugins/chatgpt/chatgpt';
+
 import { SaucenaoApiKey, BotId, TwitterAccessToken } from './private_config';
 import 'koishi-adapter-onebot';
 // 创建一个 Koishi 应用
@@ -27,6 +29,7 @@ app
   })
   .plugin(repeat)
   .plugin(twitter, { accessToken: TwitterAccessToken })
+  .plugin(chatgpt)
   .plugin(voice);
 // 启动应用
 app.start();

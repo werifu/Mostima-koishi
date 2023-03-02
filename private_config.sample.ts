@@ -18,3 +18,5 @@ export const PollingPeriod = 60000;
 export const SaucenaoApiKey = '13241532';
 // twitter access token
 export const TwitterAccessToken = 'xx';
+// openai token
+export const OpenAIKey = '114514';
