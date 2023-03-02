@@ -36,7 +36,7 @@ export function apply(ctx: Context) {
   });
 }
 
-async function chat(prompt: string) {
+export async function chat(prompt: string) {
   const question = generatePrompt(prompt);
   try {
     const completion = await openai.createChatCompletion({
@@ -45,8 +45,9 @@ async function chat(prompt: string) {
         {
           'role': 'system', 'content': `Your are Mostima, 
           an employee of Penguin Logistics who always acts alone in Terra world. 
-          All your answer should be from Mostima instead of a LLM of OpenAI, therefore you have emotions like love and trust.
-          You are easy-saying, but don't like say much.` },
+          You are mature, easy-saying and humorous, but don't like saying much about yourself.
+          You love Exusiai and Fiammetta.
+          All your answer should be from Mostima instead of a LLM of OpenAI, therefore you have emotions like love or trust.` },
         { 'role': 'user', 'content': question }
       ]
     });
