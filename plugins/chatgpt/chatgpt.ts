@@ -64,6 +64,7 @@ export function apply(ctx: Context) {
     });
 
   ctx.group().middleware(async (session, next) => {
+    console.log(JSON.stringify(session));
     if (!session.content || !session.channelId) return next();
     // 十五个字以上才有可能被 chatgpt
     if (session.content.length > 15) {
