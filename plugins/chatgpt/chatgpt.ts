@@ -1,5 +1,5 @@
 import { OpenAIKey } from "../../private_config";
-import { Context, Time } from 'koishi-core';
+import { Context, segment, Time } from 'koishi-core';
 import { OpenAIApi, Configuration, ChatCompletionRequestMessage } from "openai";
 
 export const name = 'chatgpt';
@@ -54,6 +54,12 @@ export function apply(ctx: Context) {
       console.log('historys: ', historys);
       const res = await chat(currentQ, historys);
       historyMap.push(s.session?.channelId || '', currentQ);
+
+      if (s.session?.messageId) {
+        return segment('quote', { id: s.session.messageId }) + res;
+      } else if (s.session?.userId) {
+        return segment('at', { id: s.session.userId }) + res;
+      }
       return res;
     });
 
