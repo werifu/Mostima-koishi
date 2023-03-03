@@ -52,7 +52,7 @@ export function apply(ctx: Context) {
       console.log('current question:', currentQ, 'channelId:', s.session?.channelId);
       const historys = historyMap.getHistorys(s.session?.channelId || '');
       console.log('historys: ', historys);
-      return await chat(currentQ, historys, s.session?.username);
+      return await chat(currentQ, historys);
     });
 
   ctx.group().middleware(async (session, next) => {
@@ -61,7 +61,7 @@ export function apply(ctx: Context) {
     if (session.content.length > 15) {
       const random = Math.random();
       if (random <= 0.05) {
-        const res = await chat(session.content, [], session.username);
+        const res = await chat(session.content, []);
         await session.send(res);
         return;
       }
@@ -90,7 +90,7 @@ export async function chat(currentQuestion: string, historys: ChatCompletionRequ
     });
     return completion.data.choices[0].message?.content || '这个问题无可奉告';
   } catch (e) {
-    console.log(e)
+    console.log(JSON.stringify(e))
     return `Fail: ${e}`
   }
 }
