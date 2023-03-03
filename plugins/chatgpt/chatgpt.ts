@@ -45,9 +45,10 @@ export function apply(ctx: Context) {
     if (!session.content || !session.channelId) return next();
     const bot = ctx.bots[0];
     const atBot = segment('at', { id: bot.sid })
-    console.log(JSON.stringify(session));
+    console.log('😭', atBot);
     // if at me
     if (session.content.includes(atBot)) {
+      console.log(JSON.stringify(session));
       const currentQ = session.content.replaceAll(atBot, '');
       const historys = historyMap.getHistorys(session?.channelId || '');
       const res = await chat(currentQ, historys);
