@@ -52,7 +52,9 @@ export function apply(ctx: Context) {
       console.log('current question:', currentQ, 'channelId:', s.session?.channelId);
       const historys = historyMap.getHistorys(s.session?.channelId || '');
       console.log('historys: ', historys);
-      return await chat(currentQ, historys);
+      const res = await chat(currentQ, historys);
+      historyMap.push(s.session?.channelId || '', currentQ);
+      return res;
     });
 
   ctx.group().middleware(async (session, next) => {
