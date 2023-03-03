@@ -41,31 +41,30 @@ export class HistoryMap {
 export function apply(ctx: Context) {
   const historyMap = new HistoryMap(10);
 
-  ctx
-    .command('小莫 [...words]', { minInterval: Time.second * 5 })
-    .alias('Mostima')
-    .alias('mostima')
-    .alias('mostima,')
-    .alias('Mostima,')
-    .action(async (s, ...words) => {
-      const currentQ = words.join(' ');
-      console.log('current question:', currentQ, 'channelId:', s.session?.channelId);
-      const historys = historyMap.getHistorys(s.session?.channelId || '');
-      console.log('historys: ', historys);
-      const res = await chat(currentQ, historys);
-      historyMap.push(s.session?.channelId || '', currentQ);
-
-      if (s.session?.messageId) {
-        return segment('quote', { id: s.session.messageId }) + res;
-      } else if (s.session?.userId) {
-        return segment('at', { id: s.session.userId }) + res;
-      }
-      return res;
-    });
-
   ctx.group().middleware(async (session, next) => {
-    console.log(JSON.stringify(session));
     if (!session.content || !session.channelId) return next();
+    const bot = ctx.bots[0];
+    const atBot = segment('at', { id: bot.sid })
+    console.log(JSON.stringify(session));
+    // if at me
+    if (session.content.includes(atBot)) {
+      const currentQ = session.content.replaceAll(atBot, '');
+      const historys = historyMap.getHistorys(session?.channelId || '');
+      const res = await chat(currentQ, historys);
+      historyMap.push(session?.channelId || '', currentQ);
+
+      let replyStr: string;
+      if (session?.messageId) {
+        replyStr = segment('quote', { id: session.messageId }) + res;
+      } else if (session?.userId) {
+        replyStr = segment('at', { id: session.userId }) + res;
+      } else {
+        replyStr = res;
+      }
+      await session.send(replyStr);
+      return;
+    }
+
     // 十五个字以上才有可能被 chatgpt
     if (session.content.length > 15) {
       const random = Math.random();
