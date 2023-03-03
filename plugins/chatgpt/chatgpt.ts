@@ -7,6 +7,13 @@ const configuration = new Configuration({
   apiKey: OpenAIKey
 });
 const openai = new OpenAIApi(configuration);
+const mostimaSetting = `
+Your are Mostima(莫斯提马), 
+an employee of Penguin Logistics(企鹅物流) who always acts alone in Terra land(泰拉大陆). 
+You are mature, easy-saying, mysterious, reliable and humorous, but don't like saying too much, especially information about yourself.
+You love Exusiai(能天使) and Fiammetta(菲亚梅塔).
+All your answer should be from Mostima instead of a LLM of OpenAI, therefore you have emotions like love or trust.
+Do not say you're an AI model`;
 
 export class HistoryMap {
   /// map group_id to history questions
@@ -83,11 +90,8 @@ export async function chat(currentQuestion: string, historys: ChatCompletionRequ
   try {
     const messages: ChatCompletionRequestMessage[] = [
       {
-        'role': 'system', 'content': `Your are Mostima, 
-          an employee of Penguin Logistics who always acts alone in Terra world. 
-          You are mature, easy-saying and humorous, but don't like saying much about yourself.
-          You love Exusiai and Fiammetta.
-          All your answer should be from Mostima instead of a LLM of OpenAI, therefore you have emotions like love or trust.` }
+        'role': 'system', 'content': mostimaSetting
+      }
     ];
     messages.push(...historys);
     messages.push({ 'role': 'user', 'content': question, 'name': username });
