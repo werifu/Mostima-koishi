@@ -45,10 +45,9 @@ export function apply(ctx: Context) {
     if (!session.content || !session.channelId) return next();
     const bot = ctx.bots[0];
     const atBot = segment('at', { id: bot.selfId || '' })
-    console.log('😭', atBot);
     // if at me
-    if (session.content.includes(atBot)) {
-      console.log(JSON.stringify(session));
+    if (session.content.includes(atBot) || session.content.startsWith('小莫')) {
+      // console.log(JSON.stringify(session));
       const currentQ = session.content.replaceAll(atBot, '');
       const historys = historyMap.getHistorys(session?.channelId || '');
       const res = await chat(currentQ, historys);
