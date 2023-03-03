@@ -44,7 +44,7 @@ export function apply(ctx: Context) {
   ctx.group().middleware(async (session, next) => {
     if (!session.content || !session.channelId) return next();
     const bot = ctx.bots[0];
-    const atBot = segment('at', { id: bot.sid })
+    const atBot = segment('at', { id: bot.selfId || '' })
     console.log('😭', atBot);
     // if at me
     if (session.content.includes(atBot)) {
