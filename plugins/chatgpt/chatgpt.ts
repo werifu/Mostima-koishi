@@ -51,6 +51,7 @@ export function apply(ctx: Context) {
       const currentQ = words.join(' ');
       console.log('current question:', currentQ, 'channelId:', s.session?.channelId);
       const historys = historyMap.getHistorys(s.session?.channelId || '');
+      console.log('historys: ', historys);
       return await chat(currentQ, historys, s.session?.username);
     });
 
@@ -89,6 +90,7 @@ export async function chat(currentQuestion: string, historys: ChatCompletionRequ
     });
     return completion.data.choices[0].message?.content || '这个问题无可奉告';
   } catch (e) {
+    console.log(e)
     return `Fail: ${e}`
   }
 }
