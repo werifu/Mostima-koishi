@@ -72,15 +72,6 @@ export function apply(ctx: Context) {
       return;
     }
 
-    // 十五个字以上才有可能被 chatgpt
-    if (session.content.length > 15) {
-      const random = Math.random();
-      if (random <= 0.05) {
-        const res = await chat(session.content, []);
-        await session.send(res);
-        return;
-      }
-    }
     return next();
   });
 }
