@@ -88,7 +88,7 @@ export async function chat(currentQuestion: string, historys: ChatCompletionRequ
     messages.push({ 'role': 'user', 'content': question, 'name': username });
 
     const completion = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4',
       messages,
     });
     return completion.data.choices[0].message?.content || '这个问题无可奉告';
